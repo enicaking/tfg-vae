@@ -68,7 +68,7 @@ def sample_from_qz_given_x(qi, beta=torch.tensor(10), n_samples=1):
     ones = torch.ones((qi.shape)).to(qi.device)
 
     # Clamp to avoid divisions by 0 in the reparameterization
-    qi = dclamp(qi, 0, 1-1e-3)
+    qi = dclamp(qi, 1e-3, 1-1e-3)
 
     # Sample from U(0,1)
     rho = torch.rand(qi.shape).to(qi.device)
