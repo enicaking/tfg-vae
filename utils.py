@@ -89,6 +89,55 @@ def sample_from_qz_given_x(qi, beta=torch.tensor(10), n_samples=1):
     return q_z
 
 
+def init_library_size(
+    adata_manager: AnnDataManager, n_batch: dict
+) -> tuple[np.ndarray, np.ndarray]:
+    """Computes and returns library size.
+
+    Parameters
+    ----------
+    adata_manager
+        :class:`~scvi.data.AnnDataManager` object setup with :class:`~scvi.model.SCVI`.
+    n_batch
+        Number of batches.
+
+    Returns
+    -------
+    type
+        Tuple of two 1 x n_batch ``np.ndarray`` containing the means and variances
+        of library size in each batch in adata.
+
+        If a certain batch is not present in the adata, the mean defaults to 0,
+        and the variance defaults to 1. These defaults are arbitrary placeholders that
+        should not be used in any downstream computation.
+    """
+    data = adata_manager.get_from_registry(REGISTRY_KEYS.X_KEY)
+    batch_indices = adata_manager.get_from_registry(REGISTRY_KEYS.BATCH_KEY)
+
+    library_log_means = np.zeros(n_batch)
+    library_log_vars = np.ones(n_batch)
+
+    for i_batch in np.unique(batch_indices):
+        idx_batch = np.squeeze(batch_indices == i_batch)
+        batch_data = data[idx_batch.nonzero()[0]]
+        sum_counts = batch_data.sum(axis=1)
+        masked_log_sum = np.ma.log(sum_counts)
+        if np.ma.is_masked(masked_log_sum):
+            warnings.warn(
+                "This dataset has some empty cells, this might fail inference."
+                "Data should be filtered with `scanpy.pp.filter_cells()`",
+                UserWarning,
+                stacklevel=settings.warnings_stacklevel,
+            )
+
+        log_counts = masked_log_sum.filled(0)
+        library_log_means[i_batch] = np.mean(log_counts).astype(np.float32)
+        library_log_vars[i_batch] = np.var(log_counts).astype(np.float32)
+
+    return library_log_means.reshape(1, -1), library_log_vars.reshape(1, -1)
+
+
+
 # Test utility function
 def add_numbers(a, b):
     """
