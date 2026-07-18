@@ -156,3 +156,33 @@ def add_numbers(a, b):
             Sum of a and b.
     """
     return a + b
+
+
+
+import torch
+import torch.distributions as dist
+
+# Define the kl_div_bernoulli function
+def kl_div_bernoulli(q_probs, p_probs):
+    """
+    Compute KL Divergence D_KL(q|p) between two Bernoulli distributions.
+    """
+
+    # Extract probabilities if distribution objects are passed
+    if isinstance(q_probs, dist.Bernoulli):
+        q_probs = q_probs.probs
+    if isinstance(p_probs, dist.Bernoulli):
+        p_probs = p_probs.probs
+
+    # Clamp to avoid numerical instabilities
+    q_probs = torch.clamp(q_probs, min=1e-8, max=1 - 1e-8)
+    p_probs = torch.clamp(p_probs, min=1e-8, max=1 - 1e-8)
+
+    # Analytical formula: KL(q||p) = q*log(q/p) + (1-q)*log((1-q)/(1-p))
+    kl_div = (q_probs * (torch.log(q_probs) - torch.log(p_probs)) +
+              (1 - q_probs) * (torch.log(1 - q_probs) - torch.log(1 - p_probs)))
+
+    # Sum across latent dimensions
+    kl_div = torch.sum(kl_div, dim=1)
+
+    return kl_div
