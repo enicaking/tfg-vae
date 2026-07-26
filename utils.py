@@ -123,8 +123,8 @@ def kl_div_bernoulli(q_probs, p_probs):
         p_probs = p_probs.probs
 
     # Clamp to avoid numerical instabilities
-    q_probs = torch.clamp(q_probs, min=1e-8, max=1 - 1e-8)
-    p_probs = torch.clamp(p_probs, min=1e-8, max=1 - 1e-8)
+    q_probs = torch.clamp(q_probs, min=1e-6, max=1 - 1e-6)
+    p_probs = torch.clamp(p_probs, min=1e-6, max=1 - 1e-6)
 
     # Analytical formula: KL(q||p) = q*log(q/p) + (1-q)*log((1-q)/(1-p))
     kl_div = (q_probs * (torch.log(q_probs) - torch.log(p_probs)) +
