@@ -1,0 +1,15 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.defaultPackageManager": "ms-python.python:pip"
+
+    "files.exclude": {
+        "**/gpu_env": true,
+        "**/venv": true,
+        "**/.venv": true
+    },
+    "search.exclude": {
+        "**/gpu_env": true,
+        "**/venv": true,
+        "**/.venv": true
+    }
+}

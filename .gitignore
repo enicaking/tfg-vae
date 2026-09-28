@@ -1,0 +1,28 @@
+/gpu_env
+/venv
+/.venv
+/gpu_env/
+/venv/
+/.venv/
+__pycache__
+/__pycache__
+__pycache__/
+.vscode/
+/.vscode
+.vscode
+
+# Python and Jupyter-generated files
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Local datasets and experiment outputs
+/data/
+/scvi_data/
+/old_data/0. vae/data/MNIST/raw/
+/old_data/0. vae/results/
+
+# Common local environment files
+.env
+.env.*
+!.env.example
